@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>           <!-- kept getting errors so just used auto indentation of Atom -->
+                  <!-- kept getting errors so just used auto indentation of Atom -->
+                        <!-- kept getting errors so just used auto indentation of Atom -->
+    <head>
+        <meta charset="utf-8">
+        <title>Quotes</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class= "jumbotron text-center">
+            <h1>Hello {{request.session.loggedUser}}!</h1><br>
+            <p class= "logout"><a href='/logout'> Logout </a></p>
+        </div>
+
+            <div class= "container">
+                <div class="msg">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <h3 style="color:red"> {{message}} </h3>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class= "col-sm-6">
+                    <h1>Quotable Quotes...</h1><br>
+
+                    {% for quote in quotes %}
+                        <p>{{quote.text}}</p>
+                        <p><em>Posted by <a href='/indv_user/{{quote.user.id}}'> {{quote.quoted_by}}</a></em></p>
+
+                        <form action="/add_fav/{{quote.id}}" method="post">
+                        {%csrf_token%}
+                        <input type="submit" value="Add to My List">
+                    </form><br>
+                    {% endfor %}
+                </div>
+
+                <div class= "col-sm-6">
+                    <h1>Your Favorite Quotes...</h1><br>
+                    {% for quote in quotes %}
+                        {% for fav in quote.fav_quote.all%}
+                             {% if fav.user_id == request.session.loggedUserID %}
+                                {{quote.text}}
+                                <p><em>Posted by <a href='/indv_user/{{quote.user.id}}'>  {{quote.quoted_by}} </a></em></p>
+
+                                <form action="/delete_fav/{{quote.id}}" method="post">
+                                {%csrf_token%}
+                                <input type="submit" value="Delete from My List">
+                                </form><br>
+                             {% endif %}
+                        {%endfor%}
+                    {%endfor%}
+                </div>
+
+                <div class= "col-sm-6">
+                    <form action="/sub_quote" method="post">
+                    {%csrf_token%}
+                        <h1>Contribute a Quote Here</h1><br>
+                            <table>
+                                <tr>
+                                    <td>Quoted By:</td>
+                                    <td><input type="text" name="quoted_by"></td>
+                                </tr>
+                                <tr>
+                                    <td>Message:</td>
+                                    <td><textarea cols= 40 rows= 8 name='text'></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td><br></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td><input type="submit" value="Submit Your Quote"></td>
+                                </tr>
+                            </table>
+                    </form>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+    </body>
+</html>
